@@ -48,6 +48,17 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      - name: TEMP enable the containerd image store (do not merge)
+        run: |
+          set -euo pipefail
+          sudo mkdir -p /etc/docker
+          [ -s /etc/docker/daemon.json ] || echo '{}' | sudo tee /etc/docker/daemon.json >/dev/null
+          sudo jq '.features = ((.features // {}) + {"containerd-snapshotter": true})' /etc/docker/daemon.json | sudo tee /etc/docker/daemon.tmp >/dev/null
+          sudo mv /etc/docker/daemon.tmp /etc/docker/daemon.json
+          sudo systemctl restart docker
+          docker version --format 'docker {{.Server.Version}}'
+          docker info --format 'storage driver: {{.Driver}}'
+
       - name: Set up Helm
         uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
         with:
