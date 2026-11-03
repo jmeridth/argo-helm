@@ -1,0 +1,3 @@
+bump: patch
+kind: changed
+description: Throwaway fragment to exercise the CI image preload. Not for merge.
