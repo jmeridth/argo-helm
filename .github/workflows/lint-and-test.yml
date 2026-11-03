@@ -33,7 +33,7 @@ jobs:
         run: docker run --rm --user 1001 --volume "${GITHUB_WORKSPACE}:/work:ro" --workdir /work/charts "${AH_IMAGE}" ah lint
 
   chart-test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     permissions:
       contents: read
     steps:
@@ -47,6 +47,12 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
+
+      - name: TEMP report Docker image store (do not merge)
+        run: |
+          docker version --format 'docker {{.Server.Version}}'
+          docker info --format 'storage driver: {{.Driver}}'
+          cat /etc/docker/daemon.json 2>/dev/null || echo 'no daemon.json'
 
       - name: Set up Helm
         uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
